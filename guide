@@ -1,0 +1,52 @@
+- Create new project
+composer create-project --prefer-dist laravel/laravel laravel-project
+
+- Install Guzzle:
+(http://docs.guzzlephp.org/en/latest/index.html)
+
+- composer require guzzlehttp/guzzle:~6.0
+
+- Create controller
+$ php artisan make:controller CallController --resource
+
+- Edit controller
+use GuzzleHttp\Client;
+.
+.
+public function index()
+{
+    $client = new Client([
+       'base_uri' => 'http://localhost:8080',
+    ]);
+    $response = $client ->request('GET', 'tests');
+    $content = json_decode($response->getStatusCode(), true); //Returns an array
+    return view('list')->with('content', $content);}
+.
+.
+public function show($id)
+{
+    $client = new Client([
+       'base_uri' => 'http://localhost:8080',
+    ]);
+    $response = $client ->request('GET', 'test'.$id);
+    $content = json_decode($response->getBody(), true);
+    return view('detail')->with('content', $content);
+}
+
+- Edit web.php
+Route::get('index', 'CallController@index');
+
+- Create views
+- list.blade.php
+@foreach ($content as $subcontent)
+    @foreach ($subcontent as $ket => $value)
+        {{ $key }}: {{ $value }} <br>
+    @endforeach <br>
+@endforeach
+- detail.blade.php
+@foreach ($content as $ket => $value)
+    {{ $key }}: {{ $value }} <br>
+@endforeach <br>
+
+- Run server
+$ php artisan serve
